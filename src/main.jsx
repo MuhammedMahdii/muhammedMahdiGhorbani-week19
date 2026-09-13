@@ -14,11 +14,26 @@ import {
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_CANDIDATES = Array.from(new Set([
+  import.meta.env.VITE_API_URL,
+  'http://localhost:3000',
+  'http://localhost:3001',
+].filter(Boolean)));
 const TOKEN_KEY = 'stockroom-token';
 const PAGE_LIMIT = 5;
 
-const fa = (value) => Number(value || 0).toLocaleString('fa-IR');
+const fa = (value) => {
+  const number = Number(value ?? 0);
+
+  if (!Number.isFinite(number)) {
+    return '۰';
+  }
+
+  return new Intl.NumberFormat('fa-IR', {
+    maximumFractionDigits: 0,
+  }).format(number);
+};
+
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 function getStoredUsername() {
@@ -34,22 +49,36 @@ function getStoredUsername() {
 
 async function api(path, options = {}) {
   const token = localStorage.getItem(TOKEN_KEY);
-  const response = await fetch(`${API_URL}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    },
-  });
+  let lastError;
 
-  const body = response.status === 204 ? null : await response.json().catch(() => ({}));
+  for (const baseUrl of API_CANDIDATES) {
+    try {
+      const response = await fetch(`${baseUrl}${path}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(options.headers || {}),
+        },
+      });
 
-  if (!response.ok) {
-    throw new Error(body.message || 'خطایی رخ داد.');
+      const body = response.status === 204 ? null : await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(body.message || 'خطایی رخ داد.');
+      }
+
+      return body;
+    } catch (error) {
+      lastError = error;
+      if (error instanceof TypeError || String(error).includes('Failed to fetch')) {
+        continue;
+      }
+      throw error;
+    }
   }
 
-  return body;
+  throw lastError || new Error('خطایی رخ داد.');
 }
 
 function Auth({ onLogin }) {
@@ -107,7 +136,6 @@ function Auth({ onLogin }) {
 
   return (
     <main className="auth-page" dir="rtl">
-      <h1>پنل مدیریت فروشگاه مهدی</h1>
 
       <section className="auth-card">
         <img className="auth-logo" src="/botostart-logo.png" alt="Mahdi Store" />

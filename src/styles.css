@@ -166,8 +166,16 @@ button {
 }
 
 .metric-card strong {
+  display: inline-block;
   font-size: 22px;
   color: #0f172a;
+  letter-spacing: 0.01em;
+}
+
+.product-card .product-price,
+.product-card .product-meta span,
+.metric-card strong {
+  white-space: nowrap;
 }
 
 .catalog-toolbar {
@@ -247,6 +255,10 @@ button {
   color: #0f172a;
   font-size: 24px;
   font-weight: 700;
+  direction: ltr;
+  unicode-bidi: plaintext;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
 }
 
 .product-meta {
@@ -257,6 +269,76 @@ button {
   margin-top: 18px;
   color: #64748b;
   font-size: 12px;
+}
+
+@media (max-width: 820px) {
+  .store-topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .store-nav {
+    justify-content: space-between;
+  }
+
+  .hero-section {
+    grid-template-columns: 1fr;
+    padding: 24px 18px;
+  }
+
+  .hero-metrics {
+    grid-template-columns: repeat(3, minmax(90px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .storefront {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .store-topbar {
+    padding: 16px 14px;
+  }
+
+  .brand-wrap {
+    justify-content: center;
+  }
+
+  .store-nav {
+    width: 100%;
+  }
+
+  .nav-link {
+    flex: 1;
+    text-align: center;
+  }
+
+  .hero-section h1 {
+    font-size: 30px;
+  }
+
+  .hero-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .metric-card strong {
+    font-size: 20px;
+  }
+
+  .catalog-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .catalog-search {
+    min-width: 100%;
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .catalog-empty {
