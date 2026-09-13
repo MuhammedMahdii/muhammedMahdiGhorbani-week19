@@ -30,7 +30,7 @@
 2. در ترمینال دیگری، پروژه فرانت‌اند را اجرا کنید:
 
    ```bash
-   cd /Users/maryamamroodi/Downloads/week19
+   cd week19
    npm install
    npm run dev
    ```
